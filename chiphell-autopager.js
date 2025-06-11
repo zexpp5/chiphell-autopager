@@ -230,6 +230,11 @@
                               console.log(`[TR-Debug-Current] 隐藏TR ${trIndex}`);
                               tr.style.display = 'none';
                           });
+
+                          // 为当前页面的post也添加相同的样式
+                          post.style.borderTop = '3px solid #ff6b6b';
+                          post.style.marginTop = '20px';
+                          post.style.paddingTop = '15px';
                       });
                   }
 
