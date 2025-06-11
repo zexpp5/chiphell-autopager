@@ -149,12 +149,6 @@
                               post.style.marginTop = '20px';
                               post.style.paddingTop = '15px';
 
-                              // 添加页面标记
-                              let pageMarker = document.createElement('div');
-                              pageMarker.style.cssText = 'background: #ff6b6b; color: white; padding: 5px 10px; margin-bottom: 10px; border-radius: 3px; font-size: 12px;';
-                              pageMarker.textContent = `来自: ${url}`;
-                              post.insertBefore(pageMarker, post.firstChild);
-
                               // 插入到正确位置
                               currentAfterNode.parentNode.insertBefore(post, currentAfterNode.nextSibling);
                               currentAfterNode = post;
