@@ -9,8 +9,21 @@
 // @grant        none
 // ==/UserScript==
 
-(function () {
+              (function () {
               'use strict';
+
+              // 隐藏页面头部和尾部元素
+              function hideHeaderFooter() {
+                  const style = document.createElement('style');
+                  style.textContent = `
+                      #hd { display: none !important; }
+                      #ft { display: none !important; }
+                      #toptb { display: none !important; }
+                      #tpst { display: none !important; }
+                  `;
+                  document.head.appendChild(style);
+                  console.log('[Chiphell-Autoload] 已隐藏页面头部和尾部');
+              }
 
               let lastThreadUrl = null;
 
@@ -19,6 +32,9 @@
                   const isThreadPage = location.pathname.includes('/thread-') ||
                                      (location.pathname.includes('/forum.php') && location.search.includes('mod=viewthread'));
                   if (!isThreadPage) return;
+
+                  // 隐藏头部和尾部
+                  hideHeaderFooter();
 
                   if (lastThreadUrl === location.href) {
                       console.log('[Chiphell-Autoload] Already loaded this thread, skip.');
