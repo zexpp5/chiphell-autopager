@@ -5,6 +5,7 @@
 // @description  自动加载Chiphell论坛帖子前5页内容
 // @author       GPT-4
 // @match        https://www.chiphell.com/thread-*
+// @match        https://www.chiphell.com/forum.php?mod=viewthread*
 // @grant        none
 // ==/UserScript==
 
@@ -14,8 +15,10 @@
               let lastThreadUrl = null;
           
               async function autoloadPages() {
-                  // 检查是否在帖子页面（URL包含thread-）
-                  if (!location.pathname.includes('/thread-')) return;
+                  // 检查是否在帖子页面（URL包含thread-或forum.php?mod=viewthread）
+                  const isThreadPage = location.pathname.includes('/thread-') || 
+                                     (location.pathname.includes('/forum.php') && location.search.includes('mod=viewthread'));
+                  if (!isThreadPage) return;
           
                   if (lastThreadUrl === location.href) {
                       console.log('[Chiphell-Autoload] Already loaded this thread, skip.');
@@ -37,28 +40,32 @@
                   }
                   console.log('[Chiphell-Autoload] 找到主内容区，开始处理分页...');
           
-                  function getPageUrls() {
-                      let pageNav = document.querySelector('.pg');
-                      if (!pageNav) {
-                          console.log('[Chiphell-Autoload] 没有分页导航。');
-                          return [location.href];
-                      }
-          
-                      let urls = [];
-                      urls.push(location.href);
-          
-                      // 获取分页链接
-                      let links = Array.from(pageNav.querySelectorAll('a[href*="thread-"]'));
-                      for (let i = 0; i < links.length; i++) {
-                          let url = new URL(links[i].href, location.origin).href;
-                          if (!urls.includes(url) && urls.length < 5) {
-                              urls.push(url);
+                                        function getPageUrls() {
+                          let pageNav = document.querySelector('.pg');
+                          if (!pageNav) {
+                              console.log('[Chiphell-Autoload] 没有分页导航。');
+                              return [location.href];
                           }
-                      }
           
-                      console.log('[Chiphell-Autoload] 分页URL:', urls);
-                      return urls.slice(0, 5);
-                  }
+                          let urls = [];
+                          urls.push(location.href);
+          
+                          // 获取分页链接 - 支持两种URL格式
+                          let links = Array.from(pageNav.querySelectorAll('a'));
+                          for (let i = 0; i < links.length; i++) {
+                              let href = links[i].href;
+                              // 检查是否是thread-格式或forum.php格式的链接
+                              if (href.includes('thread-') || (href.includes('forum.php') && href.includes('mod=viewthread'))) {
+                                  let url = new URL(href, location.origin).href;
+                                  if (!urls.includes(url) && urls.length < 5) {
+                                      urls.push(url);
+                                  }
+                              }
+                          }
+          
+                          console.log('[Chiphell-Autoload] 分页URL:', urls);
+                          return urls.slice(0, 5);
+                      }
           
                   function isAlreadyLoaded(url) {
                       return !!document.querySelector('[data-autoloaded-page="' + url + '"]');
